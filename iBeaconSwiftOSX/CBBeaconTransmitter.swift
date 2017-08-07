@@ -21,9 +21,10 @@ import Foundation
 import CoreBluetooth
 import CoreLocation
 
-private var once = dispatch_once_t()
-
 final class CBBeaconTransmitter: NSObject, CBBeaconTransmitterProtocol {
+    private lazy var __once: () = {
+            self.manager = CBPeripheralManager(delegate: self, queue: nil)
+        }()
     // Properties
     var manager: CBPeripheralManager!
     var beaconData: CBBeaconAvertisementData!
@@ -32,21 +33,19 @@ final class CBBeaconTransmitter: NSObject, CBBeaconTransmitterProtocol {
     override init() {
         super.init()
         // http://stackoverflow.com/a/24137213/3824765
-        dispatch_once(&once) {
-            self.manager = CBPeripheralManager(delegate: self, queue: nil)
-        }
+        _ = __once
     }
     
     // Set Up
-    func setUpBeacon(proximityUUID uuid: NSUUID?, major M: CLBeaconMajorValue?, minor m: CLBeaconMinorValue?, measuredPower power: Int8?) {
+    func setUpBeacon(proximityUUID uuid: UUID?, major M: CLBeaconMajorValue?, minor m: CLBeaconMinorValue?, measuredPower power: Int8?) {
         beaconData = CBBeaconAvertisementData(proximityUUID: uuid!, major: M!, minor: m!, measuredPower: power!)
     }
     
     // Transmitting
     func startTransmitting() {
         if let advertisement = beaconData.beaconAdvertisement() {
-            println(advertisement)
-            manager.startAdvertising(advertisement)
+            print(advertisement)
+            manager.startAdvertising(advertisement as? [String : Any])
         }
     }
     
@@ -54,38 +53,38 @@ final class CBBeaconTransmitter: NSObject, CBBeaconTransmitterProtocol {
         manager.stopAdvertising()
         //manager.delegate = nil
         delegate?.transmitterDidStartAdvertising(false)
-        println("Advertising our iBeacon Stopped")
+        print("Advertising our iBeacon Stopped")
     }
     
     
     // CBPeripheralManager Delegate
-    func peripheralManagerDidUpdateState(peripheral: CBPeripheralManager!) {
+    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
         print("The peripheral state is ")
         switch peripheral.state {
-        case .PoweredOff:
-            println("Powered off")
-        case .PoweredOn:
-            println("Powered on")
-        case .Resetting:
-            println("Resetting")
-        case .Unauthorized:
-            println("Unauthorized")
-        case .Unknown:
-            println("Unknown")
-        case .Unsupported:
-            println("Unsupported")
+        case .poweredOff:
+            print("Powered off")
+        case .poweredOn:
+            print("Powered on")
+        case .resetting:
+            print("Resetting")
+        case .unauthorized:
+            print("Unauthorized")
+        case .unknown:
+            print("Unknown")
+        case .unsupported:
+            print("Unsupported")
         }
         
-        let isPoweredOn = peripheral.state == CBPeripheralManagerState.PoweredOn ? true : false
+        let isPoweredOn = peripheral.state == CBPeripheralManagerState.poweredOn ? true : false
         delegate?.transmitterDidPoweredOn(isPoweredOn)
     }
     
-    func peripheralManagerDidStartAdvertising(peripheral: CBPeripheralManager!, error: NSError!) {
+    func peripheralManagerDidStartAdvertising(_ peripheral: CBPeripheralManager, error: Error?) {
         if error == nil {
-            println("Advertising our iBeacon Started")
+            print("Advertising our iBeacon Started")
             delegate?.transmitterDidStartAdvertising(true)
         } else {
-            println("Failed to advertise iBeacon. Error = \(error)")
+            print("Failed to advertise iBeacon. Error = \(String(describing: error))")
             delegate?.transmitterDidStartAdvertising(false)
         }
     }

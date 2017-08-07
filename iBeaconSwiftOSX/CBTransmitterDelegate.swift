@@ -22,6 +22,6 @@ import CoreBluetooth
 
 protocol CBTransmitterDelegate {    
     var isAdvertising: Bool? { get set }
-    func transmitterDidPoweredOn(isPoweredOn: Bool)
-    func transmitterDidStartAdvertising(isAdvertising: Bool)
+    func transmitterDidPoweredOn(_ isPoweredOn: Bool)
+    func transmitterDidStartAdvertising(_ isAdvertising: Bool)
 }
