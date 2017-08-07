@@ -23,6 +23,7 @@ import CoreLocation
 
 final class CBBeaconTransmitter: NSObject, CBBeaconTransmitterProtocol {
     private lazy var __once: () = {
+            //print("__once")
             self.manager = CBPeripheralManager(delegate: self, queue: nil)
         }()
     // Properties
