@@ -76,7 +76,7 @@ final class CBBeaconTransmitter: NSObject, CBBeaconTransmitterProtocol {
             print("Unsupported")
         }
         
-        let isPoweredOn = peripheral.state == CBPeripheralManagerState.poweredOn ? true : false
+        let isPoweredOn = peripheral.state == CBManagerState.poweredOn ? true : false
         delegate?.transmitterDidPoweredOn(isPoweredOn)
     }
     
