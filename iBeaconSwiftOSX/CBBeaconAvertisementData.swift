@@ -62,12 +62,12 @@ import CoreLocation
     
 final class CBBeaconAvertisementData: NSObject, CBBeaconAvertisementDataProtocol {
     // Properties
-    var proximityUUID: NSUUID
+    var proximityUUID: UUID
     var major:  CLBeaconMajorValue
     var minor: CLBeaconMinorValue
     var measuredPower: Int8
         
-    init(proximityUUID: NSUUID?, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, measuredPower: Int8?) {
+    init(proximityUUID: UUID?, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, measuredPower: Int8?) {
         self.proximityUUID = proximityUUID!
         self.major = major!
         self.minor = minor!
@@ -78,9 +78,9 @@ final class CBBeaconAvertisementData: NSObject, CBBeaconAvertisementDataProtocol
         let bufferSize = 21
         let beaconKey: NSString = "kCBAdvDataAppleBeaconKey";
         
-        var advertisementBytes = [CUnsignedChar](count: bufferSize, repeatedValue: 0)
+        var advertisementBytes = [CUnsignedChar](repeating: 0, count: bufferSize)
 
-        proximityUUID.getUUIDBytes(&advertisementBytes)
+        (proximityUUID as NSUUID).getBytes(&advertisementBytes)
         
         advertisementBytes[16] = CUnsignedChar(major >> 8)
         advertisementBytes[17] = CUnsignedChar(major & 255)
@@ -92,7 +92,7 @@ final class CBBeaconAvertisementData: NSObject, CBBeaconAvertisementDataProtocol
         advertisementBytes[20] = CUnsignedChar(bitPattern: measuredPower)
         
         // http://stackoverflow.com/questions/24196820/nsdata-from-byte-array-in-swift
-        let advertisement = NSData(bytes: advertisementBytes, length: bufferSize)
+        let advertisement = Data(bytes: UnsafePointer<UInt8>(advertisementBytes), count: bufferSize)
         
         return NSDictionary(object: advertisement, forKey: beaconKey)
     }

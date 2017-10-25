@@ -59,12 +59,12 @@ import Foundation
 import CoreLocation
 
 protocol CBBeaconAvertisementDataProtocol {
-    var proximityUUID: NSUUID { get set }
+    var proximityUUID: UUID { get set }
     var major: CLBeaconMajorValue { get set }
     var minor: CLBeaconMinorValue { get set }
     var measuredPower: Int8 { get set }
     
-    init(proximityUUID: NSUUID?, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, measuredPower: Int8?)
+    init(proximityUUID: UUID?, major: CLBeaconMajorValue?, minor: CLBeaconMinorValue?, measuredPower: Int8?)
     
     func beaconAdvertisement() -> NSDictionary?
 }

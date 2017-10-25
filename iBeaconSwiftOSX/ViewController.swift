@@ -53,42 +53,42 @@ class ViewController: NSViewController, CBTransmitterDelegate {
         loadUserDefaults()
     }
     
-    override var representedObject: AnyObject? {
+    override var representedObject: Any? {
         didSet {
             // Update the view, if already loaded.
         }
     }
     
     func loadUserDefaults() {
-        var udid : NSString? = NSUserDefaults.standardUserDefaults().stringForKey(kCBUserDefaultsUDID)
+        let udid : NSString? = UserDefaults.standard.string(forKey: kCBUserDefaultsUDID) as NSString?
         if udid != nil {
             uuidTextField.stringValue = "\(udid!)"
         }
         
-        var major : NSString? = NSUserDefaults.standardUserDefaults().stringForKey(kCBCUserDefaultsMajor)
+        let major : NSString? = UserDefaults.standard.string(forKey: kCBCUserDefaultsMajor) as NSString?
         if major != nil {
             majorTextField.stringValue = "\(major!)"
         }
         
-        var minor : NSString? = NSUserDefaults.standardUserDefaults().stringForKey(kCBCUserDefaultsMinor)
+        let minor : NSString? = UserDefaults.standard.string(forKey: kCBCUserDefaultsMinor) as NSString?
         if minor != nil {
             minorTextField.stringValue = "\(minor!)"
         }
         
-        var measuredPower : NSString? = NSUserDefaults.standardUserDefaults().stringForKey(kCBCUserDefaultsMeasuredPower)
+        let measuredPower : NSString? = UserDefaults.standard.string(forKey: kCBCUserDefaultsMeasuredPower) as NSString?
         if measuredPower != nil {
             measuredPowerTextField.stringValue = "\(measuredPower!)"
         }
     }
     
-    @IBAction func startButtonClicked(sender: AnyObject) {
+    @IBAction func startButtonClicked(_ sender: AnyObject) {
         // Transmit
         if !isAdvertising! {
             // Store Values in NSUserDefaults
-            NSUserDefaults.standardUserDefaults().setObject(uuidTextField.stringValue, forKey: kCBUserDefaultsUDID)
-            NSUserDefaults.standardUserDefaults().setObject(majorTextField.stringValue, forKey: kCBCUserDefaultsMajor)
-            NSUserDefaults.standardUserDefaults().setObject(minorTextField.stringValue, forKey: kCBCUserDefaultsMinor)
-            NSUserDefaults.standardUserDefaults().setObject(measuredPowerTextField.stringValue, forKey: kCBCUserDefaultsMeasuredPower)
+            UserDefaults.standard.set(uuidTextField.stringValue, forKey: kCBUserDefaultsUDID)
+            UserDefaults.standard.set(majorTextField.stringValue, forKey: kCBCUserDefaultsMajor)
+            UserDefaults.standard.set(minorTextField.stringValue, forKey: kCBCUserDefaultsMinor)
+            UserDefaults.standard.set(measuredPowerTextField.stringValue, forKey: kCBCUserDefaultsMeasuredPower)
             
             transmitAsBeacon()
         }
@@ -97,13 +97,13 @@ class ViewController: NSViewController, CBTransmitterDelegate {
         }
     }
     
-    @IBAction func genereateUUIDClicked(sender: AnyObject) {
-        uuidTextField.stringValue = "\(NSUUID().UUIDString)"
+    @IBAction func genereateUUIDClicked(_ sender: AnyObject) {
+        uuidTextField.stringValue = "\(UUID().uuidString)"
     }
     
     // Transmit as iBeacon
     func transmitAsBeacon() {
-        transmitter?.setUpBeacon(proximityUUID: NSUUID(UUIDString: uuidTextField.stringValue)!,
+        transmitter?.setUpBeacon(proximityUUID: UUID(uuidString: uuidTextField.stringValue)!,
             major: UInt16(majorTextField.integerValue),
             minor: UInt16(minorTextField.integerValue),
             measuredPower: Int8(measuredPowerTextField.integerValue))
@@ -114,53 +114,53 @@ class ViewController: NSViewController, CBTransmitterDelegate {
         transmitter?.stopTransmitting()
     }
     
-    func toggleControls(beaconStatus: BeaconStatus) {
+    func toggleControls(_ beaconStatus: BeaconStatus) {
         switch beaconStatus
         {
-        case .Advertising:
+        case .advertising:
             startButton.title = "Turn iBeacon off"
-            startButton.enabled = true
+            startButton.isEnabled = true
             enableControls(false)
-        case .NotAdvertising:
+        case .notAdvertising:
             startButton.title = "Turn iBeacon on"
-            startButton.enabled = true
+            startButton.isEnabled = true
             enableControls(true)
-        case .ResumeAdvertise:
+        case .resumeAdvertise:
             transmitAsBeacon()
-            startButton.enabled = true
+            startButton.isEnabled = true
             enableControls(false)
-        case .CannotAdvertise:
-            startButton.enabled = false
+        case .cannotAdvertise:
+            startButton.isEnabled = false
             enableControls(false)
         }
     }
     
-    func enableControls(enabled: Bool) {
-        generateUUIDButton.enabled = enabled
-        uuidTextField.enabled = enabled
-        majorTextField.enabled = enabled
-        minorTextField.enabled = enabled
-        measuredPowerTextField.enabled = enabled
+    func enableControls(_ enabled: Bool) {
+        generateUUIDButton.isEnabled = enabled
+        uuidTextField.isEnabled = enabled
+        majorTextField.isEnabled = enabled
+        minorTextField.isEnabled = enabled
+        measuredPowerTextField.isEnabled = enabled
     }
     
-    func transmitterDidPoweredOn(isPoweredOn: Bool) {
+    func transmitterDidPoweredOn(_ isPoweredOn: Bool) {
         if isPoweredOn {
-            toggleControls(isAdvertising! ? BeaconStatus.ResumeAdvertise : BeaconStatus.NotAdvertising)
+            toggleControls(isAdvertising! ? BeaconStatus.resumeAdvertise : BeaconStatus.notAdvertising)
         }
         else {
-            toggleControls(BeaconStatus.CannotAdvertise)
+            toggleControls(BeaconStatus.cannotAdvertise)
         }
     }
     
-    func transmitterDidStartAdvertising(isAdvertising: Bool) {
+    func transmitterDidStartAdvertising(_ isAdvertising: Bool) {
         self.isAdvertising = isAdvertising
-        toggleControls(isAdvertising == true ? BeaconStatus.Advertising : BeaconStatus.NotAdvertising)
+        toggleControls(isAdvertising == true ? BeaconStatus.advertising : BeaconStatus.notAdvertising)
     }
     
     enum BeaconStatus {
-        case Advertising
-        case NotAdvertising
-        case ResumeAdvertise
-        case CannotAdvertise
+        case advertising
+        case notAdvertising
+        case resumeAdvertise
+        case cannotAdvertise
     }
 }

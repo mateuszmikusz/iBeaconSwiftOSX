@@ -25,7 +25,7 @@ protocol CBBeaconTransmitterProtocol: CBPeripheralManagerDelegate {
     var beaconData: CBBeaconAvertisementData! { get set }
     var delegate: CBTransmitterDelegate? { get set }
     
-    func setUpBeacon(proximityUUID uuid: NSUUID?, major M: CLBeaconMajorValue?, minor m: CLBeaconMinorValue?, measuredPower power: Int8?)
+    func setUpBeacon(proximityUUID uuid: UUID?, major M: CLBeaconMajorValue?, minor m: CLBeaconMinorValue?, measuredPower power: Int8?)
     func startTransmitting()
     func stopTransmitting()
 }
